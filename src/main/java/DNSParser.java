@@ -50,7 +50,6 @@ public class DNSParser {
         question.setType(buffer.getShort());
         question.setClass_bit(buffer.getShort());
         header.setQuestion_count(1);
-        header.setId(1234);
         System.out.println("header" + header.getId() + "questionType:" + question.getType());
 
         dnsPacket.setQuestion(question);

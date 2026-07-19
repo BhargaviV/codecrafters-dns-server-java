@@ -179,6 +179,10 @@ public class Header {
     }
 
     public void writeToBuffer(ByteBuffer buffer) {
+        if (this.getOpcode() != 0) {
+            flags &= ~0x000F;                  // Clear current RCODE
+            flags |= (4 & 0x000F);          // Set new RCODE
+        }
 
         buffer.putShort((short) id);
         buffer.putShort((short) flags);
