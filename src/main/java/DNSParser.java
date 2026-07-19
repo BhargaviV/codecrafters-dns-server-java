@@ -8,6 +8,7 @@ import java.util.List;
 public class DNSParser {
 
     private RData resolveData(ByteBuffer buffer) {
+
         return new ARecord("192.32.10.0");
     }
 
@@ -45,25 +46,34 @@ public class DNSParser {
 
         dnsPacket.setHeader(header);
 
-        Question question = new Question();
-        question.setNames(readName(buffer));
-        question.setType(buffer.getShort());
-        question.setClass_bit(buffer.getShort());
-        header.setQuestion_count(1);
-        System.out.println("header" + header.getId() + "questionType:" + question.getType());
+        List<Question> questions = new ArrayList<>();
+        for (int i = 0; i < header.getQuestion_count(); i++) {
+            Question question = new Question();
+            question.setNames(readName(buffer));
+            question.setType(buffer.getShort());
+            question.setClass_bit(buffer.getShort());
 
-        dnsPacket.setQuestion(question);
+            System.out.println("header" + header.getId() + "questionType:" + question.getType());
+            questions.add(question);
+        }
 
-        Answer answer = new Answer();
-        answer.setNames(question.getNames());
-        answer.setType(1);
-        answer.setClass_bit(buffer.getShort());
-        answer.setTtl(buffer.getInt());
-        answer.setLength(buffer.getShort());
-        answer.setData(resolveData(buffer));
-        header.setAnswer_count(1);
+        header.setQuestion_count(questions.size());
+        dnsPacket.setQuestions(questions);
 
-        dnsPacket.setAnswer(answer);
+        List<Answer> answers = new ArrayList<>();
+        for (Question question: questions) {
+            Answer answer = new Answer();
+            answer.setNames(question.getNames());
+            answer.setType(1);
+            answer.setClass_bit(buffer.getShort());
+            answer.setTtl(buffer.getInt());
+            answer.setLength(buffer.getShort());
+            answer.setData(resolveData(buffer));
+            answers.add(answer);
+        }
+
+        header.setAnswer_count(answers.size());
+        dnsPacket.setAnswers(answers);
         return dnsPacket;
     }
 }

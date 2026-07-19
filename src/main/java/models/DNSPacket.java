@@ -1,12 +1,13 @@
 package models;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 
 public class DNSPacket {
 
     Header header;
-    Question question;
-    Answer answer;
+    List<Question> questions;
+    List<Answer> answers;
 
     public Header getHeader() {
         return header;
@@ -16,25 +17,29 @@ public class DNSPacket {
         this.header = header;
     }
 
-    public void setAnswer(Answer answer) {
-        this.answer = answer;
+    public void setAnswers(List<Answer> answers) {
+        this.answers = answers;
     }
 
-    public Answer getAnswer() {
-        return answer;
+    public List<Answer> getAnswers() {
+        return answers;
     }
 
     public void writeToBuffer(ByteBuffer buffer) {
         header.writeToBuffer(buffer);
-        question.writeToBuffer(buffer);
-        answer.writeToBuffer(buffer);
+        for (Question question: questions) {
+            question.writeToBuffer(buffer);
+        }
+        for (Answer answer:  answers) {
+            answer.writeToBuffer(buffer);
+        }
     }
 
-    public void setQuestion(Question question) {
-        this.question = question;
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
     }
 
-    public Question getQuestion() {
-        return question;
+    public List<Question> getQuestions() {
+        return questions;
     }
 }

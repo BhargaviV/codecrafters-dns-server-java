@@ -180,8 +180,8 @@ public class Header {
 
     public void writeToBuffer(ByteBuffer buffer) {
         if (this.getOpcode() != 0) {
-            flags &= ~0x000F;                  // Clear current RCODE
-            flags |= (4 & 0x000F);          // Set new RCODE
+            flags &= ~RSCODE;                  // Clear current RCODE
+            flags |= (4 & RSCODE);          // Set new RCODE
         }
 
         buffer.putShort((short) id);
