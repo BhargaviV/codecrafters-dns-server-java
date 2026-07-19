@@ -30,8 +30,12 @@ public class Main {
          final byte[] bufResponse = new byte[512];
          DNSPacket response = buildResponse(dnsPacket);
          response.writeToBuffer(ByteBuffer.wrap(bufResponse));
+           for (int i = 0; i < 512; i++) {
+               System.out.printf("%02X ", bufResponse[i] & 0xFF);
+           }
          final DatagramPacket packetResponse = new DatagramPacket(bufResponse, bufResponse.length, packet.getSocketAddress());
          serverSocket.send(packetResponse);
+//         parser.parseUDP(ByteBuffer.wrap(bufResponse));
        }
      } catch (IOException e) {
          System.out.println("IOException: " + e.getMessage());

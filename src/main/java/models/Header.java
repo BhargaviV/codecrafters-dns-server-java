@@ -62,6 +62,10 @@ public class Header {
         this.id = id;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public int getAdditional_count() {
         return additional_count;
     }
