@@ -1,7 +1,4 @@
-import models.DNSPacket;
-import models.Header;
-import models.NameField;
-import models.Question;
+import models.*;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -9,6 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DNSParser {
+
+    private RData resolveData(ByteBuffer buffer) {
+        return new ARecord("192.32.10.0");
+    }
 
     private List<NameField> readName(ByteBuffer buffer) {
         List<NameField> nameFields = new ArrayList<>();
@@ -53,6 +54,17 @@ public class DNSParser {
         System.out.println("header" + header.getId() + "questionType:" + question.getType());
 
         dnsPacket.setQuestion(question);
+
+        Answer answer = new Answer();
+        answer.setNames(question.getNames());
+        answer.setType(1);
+        answer.setClass_bit(buffer.getShort());
+        answer.setTtl(buffer.getInt());
+        answer.setLength(buffer.getShort());
+        answer.setData(resolveData(buffer));
+        header.setAnswer_count(1);
+
+        dnsPacket.setAnswer(answer);
         return dnsPacket;
     }
 }
