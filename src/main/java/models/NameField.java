@@ -27,4 +27,9 @@ public class NameField {
         buffer.put((byte) length);
         buffer.put(name.getBytes(StandardCharsets.UTF_8));
     }
+
+    @Override
+    public String toString() {
+        return "name:" + name + ":length" + length;
+    }
 }

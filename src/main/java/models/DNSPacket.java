@@ -6,8 +6,8 @@ import java.util.List;
 public class DNSPacket {
 
     Header header;
-    List<Question> questions;
-    List<Answer> answers;
+    List<Question> questions = List.of();
+    List<Answer> answers = List.of();
 
     public Header getHeader() {
         return header;
@@ -30,7 +30,7 @@ public class DNSPacket {
         for (Question question: questions) {
             question.writeToBuffer(buffer);
         }
-        for (Answer answer:  answers) {
+        for (Answer answer: answers) {
             answer.writeToBuffer(buffer);
         }
     }

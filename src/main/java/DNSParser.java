@@ -1,5 +1,7 @@
 import models.*;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -7,9 +9,15 @@ import java.util.List;
 
 public class DNSParser {
 
-    private RData resolveData(ByteBuffer buffer) {
-
-        return new ARecord("192.32.10.0");
+    private RData resolveData(ByteBuffer buffer, int rdLength) throws UnknownHostException {
+        if (rdLength == 0) {
+            return new ARecord("192.32.10.0");
+        }
+        System.out.println("resolveData" + rdLength);
+        byte[] rdata = new byte[rdLength];
+        buffer.get(rdata);
+        InetAddress ip = InetAddress.getByAddress(rdata);
+        return new ARecord(ip.getHostAddress());
     }
 
     private List<NameField> readName(ByteBuffer buffer) {
@@ -53,7 +61,8 @@ public class DNSParser {
             question.setType(buffer.getShort());
             question.setClass_bit(buffer.getShort());
 
-            System.out.println("header" + header.getId() + "questionType:" + question.getType());
+            System.out.println("header" + header.getId() + "questionType:" + question.getType() + "names" +
+                    question.getNames());
             questions.add(question);
         }
 
@@ -61,14 +70,18 @@ public class DNSParser {
         dnsPacket.setQuestions(questions);
 
         List<Answer> answers = new ArrayList<>();
-        for (Question question: questions) {
+        for (int i = 0; i < questions.size();  i++) {
             Answer answer = new Answer();
-            answer.setNames(question.getNames());
-            answer.setType(1);
+            answer.setNames(readName(buffer));
+            answer.setType(buffer.getShort() | 1);
             answer.setClass_bit(buffer.getShort());
             answer.setTtl(buffer.getInt());
-            answer.setLength(buffer.getShort());
-            answer.setData(resolveData(buffer));
+            answer.setLength(buffer.getShort() & 0xFFFF);
+            try {
+                answer.setData(resolveData(buffer, answer.getLength()));
+            } catch (UnknownHostException e) {
+                throw new RuntimeException(e);
+            }
             answers.add(answer);
         }
 
